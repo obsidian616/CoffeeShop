@@ -6,6 +6,8 @@ using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -15,6 +17,15 @@ namespace CoffeeShop.Backend.Controllers
     public class OrdersController : Controller
     {
         private AppDbContext db = new AppDbContext();
+        private readonly HttpClient _httpClient;
+        public OrdersController()
+        {
+            // 設定 HttpClient 來調用第三個專案的 API
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri("https://localhost:7060/api/") // 確保使用正確的 API URL
+            };
+        }
 
         public ActionResult Index(int? categoryId, int page = 1)
         {
@@ -60,94 +71,46 @@ namespace CoffeeShop.Backend.Controllers
             return View();
         }
 
-        ////只有後台能用
-        //[HttpPost]
-        //public ActionResult Create(Menu menu, HttpPostedFileBase imageUpload)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        if (imageUpload != null && imageUpload.ContentLength > 0)
-        //        {
-        //            // 獲取圖片的檔案名稱
-        //            var fileName = Path.GetFileName(imageUpload.FileName);
-
-        //            // 設定儲存路徑
-        //            var path = Path.Combine(Server.MapPath("~/img"), fileName);
-
-        //            // 將圖片儲存到伺服器
-        //            imageUpload.SaveAs(path);
-
-        //            // 將檔案名稱存入 Menu 的 FileName 屬性
-        //            menu.FileName = fileName;
-        //        }
-        //        else
-        //        {
-        //            // 如果沒有上傳圖片，添加錯誤
-        //            ModelState.AddModelError("FileName", "圖片是必填的");
-        //        }
-
-        //        menu.Enabled = true; // 預設設置為上架狀態
-        //        // 設置時間戳
-        //        menu.Createdtime = DateTime.Now;
-        //        menu.Modifytime = DateTime.Now;
-
-        //        // 保存菜單項目
-        //        db.Menus.Add(menu);
-        //        db.SaveChanges();
-
-        //        return RedirectToAction("Index");
-        //    }
-
-        //    // 如果模型驗證失敗，重新傳遞分類列表
-        //    ViewBag.Categories = new SelectList(db.MenuCategories.Where(c => c.Enabled), "Id", "Name");
-        //    return View(menu);
-        //}
-
         [HttpPost]
-        public ActionResult Create(Menu menu, HttpPostedFileBase imageUpload)
+        public async Task<ActionResult> Create(Menu menu, HttpPostedFileBase imageUpload)
         {
             if (ModelState.IsValid)
             {
                 if (imageUpload != null && imageUpload.ContentLength > 0)
                 {
+                    // 上傳照片到第三個專案的 API
+                    var content = new MultipartFormDataContent();
+                    var fileContent = new StreamContent(imageUpload.InputStream);
+                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageUpload.ContentType);
+                    content.Add(fileContent, "imageUpload", imageUpload.FileName);
+
+                    var response = await _httpClient.PostAsync("photo", content);
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        string path = System.Configuration.ConfigurationManager.AppSettings["uploadPath"].ToString();
-                        path = Path.Combine(path, "Products");
-
-                        string storageSite = System.Configuration.ConfigurationManager.AppSettings["storageSite"].ToString();
-
-                        if (ModelState.IsValid)
-                        {
-                            if (imageUpload != null)
-                            {
-                                menu.FileName = imageUpload.FileName;
-                                imageUpload.SaveAs(Path.Combine(path, menu.FileName));
-                            }
-                            else
-                            {
-                                // 如果沒有上傳圖片，添加錯誤
-                                ModelState.AddModelError("FileName", "圖片是必填的");
-                            }
-                            //// redirect 到指定的url
-                            //var url = $"{storageSite}uploads/Products/{menu.FileName}";
-                            //return Redirect(url);
-                        }
-
+                        var imageFileName = await response.Content.ReadAsStringAsync();
+                        menu.FileName = imageFileName; // 保存文件名
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("FileName", "圖片上傳失敗");
                     }
                 }
+                else
+                {
+                    ModelState.AddModelError("FileName", "圖片是必填的");
+                }
+
                 menu.Enabled = true; // 預設設置為上架狀態
-                // 設置時間戳
                 menu.Createdtime = DateTime.Now;
                 menu.Modifytime = DateTime.Now;
 
-                // 保存菜單項目
                 db.Menus.Add(menu);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
 
                 return RedirectToAction("Index");
             }
 
-            //如果模型驗證失敗，重新傳遞分類列表
             ViewBag.Categories = new SelectList(db.MenuCategories.Where(c => c.Enabled), "Id", "Name");
             return View(menu);
         }
@@ -156,70 +119,92 @@ namespace CoffeeShop.Backend.Controllers
         {
             if (!id.HasValue)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);  // 如果 id 為 null，返回錯誤
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var item = db.Menus.Find(id.Value);  // 確保使用 id.Value
+            var item = db.Menus.Find(id.Value);
             if (item == null)
             {
-                return HttpNotFound();  // 如果找不到項目，返回 404 錯誤
+                return HttpNotFound();
             }
 
-            // 傳遞數據到視圖
             ViewBag.Categories = new SelectList(db.MenuCategories.Where(c => c.Enabled), "Id", "Name", item.CategoryID);
             return View(item);
         }
 
         [HttpPost]
-        public ActionResult Edit(Menu menu, HttpPostedFileBase imageUpload)
+        public async Task<ActionResult> Edit(Menu menu, HttpPostedFileBase imageUpload)
         {
             if (ModelState.IsValid)
             {
-                // 如果有上傳檔案
+                // 獲取舊的照片名稱
+                var existingMenu = await db.Menus.AsNoTracking().FirstOrDefaultAsync(m => m.Id == menu.Id);
+                string oldFileName = existingMenu?.FileName;
+
                 if (imageUpload != null && imageUpload.ContentLength > 0)
                 {
-                    // 獲取檔案名稱
-                    var fileName = Path.GetFileName(imageUpload.FileName);
-                    var path = Path.Combine(Server.MapPath("~/img"), fileName);
+                    // 上傳照片到第三個專案的 API
+                    var content = new MultipartFormDataContent();
+                    var fileContent = new StreamContent(imageUpload.InputStream);
+                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageUpload.ContentType);
+                    content.Add(fileContent, "imageUpload", imageUpload.FileName);
 
-                    // 儲存上傳的檔案
-                    imageUpload.SaveAs(path);
+                    var response = await _httpClient.PostAsync("photo", content);
 
-                    // 將檔案名稱賦值給 FileName
-                    menu.FileName = fileName;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var imageFileName = await response.Content.ReadAsStringAsync();
+                        menu.FileName = imageFileName; // 保存新文件名
+
+                        // 刪除舊照片
+                        if (!string.IsNullOrEmpty(oldFileName))
+                        {
+                            var deleteResponse = await _httpClient.DeleteAsync($"photo/{oldFileName}");
+                            if (!deleteResponse.IsSuccessStatusCode)
+                            {
+                                ModelState.AddModelError("FileName", "舊照片刪除失敗");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("FileName", "圖片上傳失敗");
+                    }
                 }
                 else
                 {
-                    // 如果沒有上傳檔案，保持原有的 FileName
-                    var existingMenu = db.Menus.AsNoTracking().FirstOrDefault(m => m.Id == menu.Id);
-                    if (existingMenu != null)
-                    {
-                        menu.FileName = existingMenu.FileName;
-                    }
+                    // 如果沒有上傳新照片，保持舊的文件名
+                    menu.FileName = oldFileName;
                 }
 
-                // 設置時間戳
                 menu.Createdtime = DateTime.Now;
                 menu.Modifytime = DateTime.Now;
 
                 db.Entry(menu).State = EntityState.Modified;
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
+
             return View(menu);
         }
-
-        [HttpPost]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var menu = db.Menus.Find(id);
+            var menu = await db.Menus.FindAsync(id);
             if (menu == null)
             {
                 return HttpNotFound();
             }
 
+            // 刪除菜單前，調用第三個專案的 API 刪除對應照片
+            var response = await _httpClient.DeleteAsync($"photo/{menu.FileName}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError("", "刪除圖片失敗");
+            }
+
             db.Menus.Remove(menu);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
