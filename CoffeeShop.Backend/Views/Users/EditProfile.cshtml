@@ -1,0 +1,183 @@
+﻿@model CoffeeShop.Backend.Models.ViewModels.EditProfileVm
+@using System.Linq
+
+@{
+    ViewBag.Title = "編輯員工";
+}
+
+
+<h4>編輯員工資料</h4>
+
+<div class="form-horizontal">
+
+
+    <div class="mb-3">
+        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", id = "Name" } })
+        <span class="text-danger"></span>
+    </div>
+
+
+    <div class="mb-3">
+        @Html.LabelFor(model => model.Phone, htmlAttributes: new { @class = "control-label col-md-2" })
+        @Html.EditorFor(model => model.Phone, new { htmlAttributes = new { @class = "form-control", id = "Phone" } })
+        <span class="text-danger"></span>
+    </div>
+
+    <div class="mb-3 d-flex align-items-center">
+        <label for="IsStatus" class="form-label mb-0" style="margin-right: 10px;">在職狀態</label>
+        <div class="form-switch">
+            @Html.CheckBoxFor(model => model.IsStatus, new { @class = "form-check-input", id = "IsStatus" })
+        </div>
+    </div>
+
+
+    <div class="mb-3">
+        <h4>選擇群組</h4>
+        <div class="col-md-10">
+            @foreach (SelectListItem group in ViewBag.Groups)
+            {
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" class="group-checkbox" value="@group.Value"
+                               @(Model.SelectedGroupIds != null && Model.SelectedGroupIds.Contains(int.Parse(group.Value)) ? "checked" : "") />
+                        @group.Text
+                    </label>
+                </div>
+            }
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button id="saveChangesBtn" class="btn btn-success">更新</button>
+            @Html.ActionLink("返回", "Index", null, new { @class = "btn btn-outline-primary" })
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="updateSuccessModal" tabindex="-1" aria-labelledby="updateSuccessModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateSuccessModalLabel">更新成功</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                資料已成功更新！
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="privilegeGroupModal" tabindex="-1" aria-labelledby="privilegeGroupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="privilegeGroupModalLabel">無法變更最高權限使用者</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                最高權限使用者無法被修改！
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">確定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#saveChangesBtn').on('click', function (e) {
+                e.preventDefault();
+                var isValid = true;
+
+             
+                $('.text-danger').text('');
+
+           
+                var name = $('#Name').val().trim();
+                if (!name) {
+                    $('#Name').next('.text-danger').text('姓名必填');
+                    isValid = false;
+                } else if (name.length > 50) {
+                    $('#Name').next('.text-danger').text('姓名長度不可大於50');
+                    isValid = false;
+                }
+
+              
+                var phone = $('#Phone').val().trim();
+                if (!phone) {
+                    $('#Phone').next('.text-danger').text('聯絡電話必填');
+                    isValid = false;
+                } else if (!/^\d{10}$/.test(phone)) {
+                    $('#Phone').next('.text-danger').text('聯絡電話必須是10位數字');
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    return;
+                }
+
+    
+                var selectedGroupIds = [];
+                $('.group-checkbox:checked').each(function () {
+                    selectedGroupIds.push(parseInt($(this).val()));
+                });
+            
+                if (@Model.Id === 1 && !selectedGroupIds.includes(1)) {
+         
+                    $('#privilegeGroupMessage').text('最高權限使用者的群組無法被修改！');
+                    $('#privilegeGroupModal').modal('show');
+                    return;
+                }
+
+              
+                if (@Model.Id === 1 && !$('#IsStatus').is(':checked')) {
+                  
+                    $('#privilegeGroupMessage').text('ID 為 1 的使用者無法被停用！');
+                    $('#privilegeGroupModal').modal('show');
+                    return;
+                }
+
+           
+                $.ajax({
+                    url: '@Url.Action("EditProfile", "Users")',
+                    type: 'POST',
+                    traditional: true,
+                    data: {
+                        Id: @Model.Id,
+                        Name: name,
+                        Phone: phone,
+                        IsStatus: $('#IsStatus').is(':checked'),
+                        selectedGroupIds: selectedGroupIds
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                        
+                            $('#updateSuccessModal').modal('show');
+                    
+                            setTimeout(function () {
+                                window.location.href = '@Url.Action("Index")';
+                            }, 2000); 
+                        } else {
+                            alert("更新失敗: " + response.message);
+                        }
+                    },
+                    error: function () {
+                        alert("發生錯誤，請重試");
+                    }
+                });
+            });
+        });
+    </script>
+}

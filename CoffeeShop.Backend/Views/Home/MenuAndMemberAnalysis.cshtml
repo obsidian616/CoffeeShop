@@ -1,0 +1,173 @@
+﻿@{
+    ViewBag.Title = "餐點和會員分析";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewBag.Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            /*background-color: #f9f9f9;*/
+        }
+
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h2, h3 {
+            text-align: center;
+            color: #333;
+        }
+
+        .filter-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .chart-container {
+            flex: 1;
+            min-width: 300px;
+            max-width: 45%;
+            margin: 10px;
+            text-align: center;
+        }
+
+        .chart {
+            width: 100%;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>餐點和會員分析</h2>
+
+        <!-- 日期篩選 -->
+        <div class="filter-container">
+            <form id="filterForm" method="get" action="/Home/MenuAndMemberAnalysis">
+                <label for="startDate">開始日期:</label>
+                <input type="date" id="startDate" name="startDate" value="@ViewBag.StartDate.ToString("yyyy-MM-dd")" onchange="this.form.submit()">
+                <label for="endDate">結束日期:</label>
+                <input type="date" id="endDate" name="endDate" value="@ViewBag.EndDate.ToString("yyyy-MM-dd")" onchange="this.form.submit()">
+            </form>
+        </div>
+
+        <!-- 圖表行 -->
+        <div class="chart-row">
+            <!-- 會員統計 -->
+            <div class="chart-container">
+                <h3>會員數據統計</h3>
+                <canvas id="memberChart" class="chart"></canvas>
+            </div>
+
+            <!-- 餐點銷售分析 -->
+            <div class="chart-container">
+                <h3>餐點銷售分析</h3>
+                <canvas id="menuSalesChart" class="chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 會員數據統計
+        var newMemberCount = @ViewBag.NewMemberCount;
+        var returningMemberCount = @ViewBag.ReturningMemberCount;
+
+        var ctxMember = document.getElementById('memberChart').getContext('2d');
+        new Chart(ctxMember, {
+            type: 'bar',
+            data: {
+                labels: ['新會員', '回訪會員'],
+                datasets: [{
+                    label: '會員數量',
+                    data: [newMemberCount, returningMemberCount],
+                    backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // 餐點銷售分析 - 圓餅圖
+        var productSales = @Html.Raw(ViewBag.ProductSales);
+        var productLabels = Object.keys(productSales);
+        var productData = Object.values(productSales);
+
+        var ctxMenu = document.getElementById('menuSalesChart').getContext('2d');
+        new Chart(ctxMenu, {
+            type: 'pie',
+            data: {
+                labels: productLabels,
+                datasets: [{
+                    label: '銷售量',
+                    data: productData,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(201, 203, 207, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(201, 203, 207, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                var label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += context.raw;
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

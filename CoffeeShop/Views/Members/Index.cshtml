@@ -1,0 +1,37 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2 style="text-align: center; color: #333;">會員中心</h2>
+
+<div class="member-center">
+    <a href="/Members/EditProfile/" class="btn member-link">修改個人基本資料</a>
+    <a href="/Members/ChangePassword/" class="btn member-link">修改密碼</a>
+    <a href="#" class="btn member-link">優惠券</a>
+</div>
+
+<style>
+    .member-center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh; /* 垂直居中 */
+    }
+
+    .member-link {
+        background-color: #505637; /* 按鈕背景顏色 */
+        color: white; /* 按鈕文字顏色 */
+        padding: 15px 25px; /* 按鈕內邊距 */
+        margin: 10px; /* 按鈕之間的間距 */
+        text-align: center; /* 文字居中 */
+        border-radius: 5px; /* 圓角 */
+        text-decoration: none; /* 去掉下劃線 */
+        font-size: 18px; /* 調整字體大小 */
+        transition: background-color 0.3s; /* 加入過渡效果 */
+    }
+
+        .member-link:hover {
+            background-color: #404c4a; /* 懸停效果 */
+        }
+</style>

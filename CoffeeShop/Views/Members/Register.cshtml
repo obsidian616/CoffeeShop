@@ -1,0 +1,140 @@
+﻿@model CoffeeShop.Models.ViewModels.RegisterVm
+
+@{
+    ViewBag.Title = "Register";
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        height: 100%; /* 確保 body 佔滿整個頁面 */
+        margin: 0; /* 去除預設的 margin */
+        display: flex;
+        flex-direction: column; /* 垂直排列 */
+        background-image: url('/img/PG/room.png');
+        background-size: cover; /* 使背景圖覆蓋整個頁面 */
+        background-repeat: no-repeat; /* 防止背景圖重複 */
+        background-position: center; /* 背景圖置中 */
+        background-attachment: fixed; /* 背景固定，不隨頁面滾動 */
+    }
+
+    .form-horizontal {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: 150px auto; /* 將 margin-top 設為 150px */
+    }
+
+    h4 {
+        margin-bottom: 20px;
+        color: #333;
+        text-align: center;
+    }
+
+    .form-label {
+        font-weight: bold;
+        color: #555;
+    }
+
+    .mb-3 {
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        transition: border-color 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+
+    .btn-primary {
+        background-color: #505637; /* 按鈕顏色 */
+        color: white;
+        width: 100%; /* 使按鈕寬度佔滿父元素 */
+        padding: 15px; /* 調整內邊距 */
+        font-size: 18px; /* 調整字體大小 */
+        border: none; /* 去除邊框 */
+        border-radius: 4px; /* 圓角 */
+        transition: background-color 0.3s;
+        margin-left: 30px; /* 調整按鈕向右移動的距離 */
+    }
+
+        .btn-primary:hover {
+            background-color: #404c3f; /* 按鈕懸停顏色 */
+        }
+</style>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>註冊會員</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="mb-3">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "form-label" })
+            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "form-label" })
+            <div class="checkbox">
+                @Html.RadioButtonFor(model => model.Gender, true) 男 (Male)
+                @Html.RadioButtonFor(model => model.Gender, false) 女 (Female)
+                @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(model => model.Phone, htmlAttributes: new { @class = "form-label" })
+            @Html.EditorFor(model => model.Phone, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "form-label" })
+            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "form-label" })
+            @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(model => model.ConfirmPassword, htmlAttributes: new { @class = "form-label" })
+            @Html.EditorFor(model => model.ConfirmPassword, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(model => model.Birthday, htmlAttributes: new { @class = "form-label" })
+            @Html.EditorFor(model => model.Birthday, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Birthday, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="送出" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

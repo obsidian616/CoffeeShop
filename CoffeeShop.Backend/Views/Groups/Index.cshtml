@@ -1,0 +1,260 @@
+﻿@model IEnumerable<CoffeeShop.Backend.Models.ViewModels.GroupVm>
+
+@{
+    ViewBag.Title = "群組管理";
+}
+<div class="d-flex align-items-center">
+    <h2 class="me-3">群組管理</h2>
+    <button id="showCreateFormBtn" class="btn btn-primary">新增</button>
+</div>
+
+<div id="groupFormContainer" class="card mb-4 d-none">
+    <div class="card-header">
+        <span id="formTitle">新增群組</span>
+    </div>
+    <div class="card-body">
+        <form id="groupForm">
+
+            <input type="hidden" id="groupId" name="Id">
+            <div class="mb-3">
+                <label for="groupName" class="form-label">群組名稱</label>
+                <input type="text" class="form-control" id="groupName" name="GroupName" required>
+                <span class="text-danger" id="nameError"></span>
+            </div>
+            <div class="mb-3">
+                <div class="form-switch">
+                    <input class="form-check-input" type="checkbox" id="enabled" name="Enabled" checked>
+                    <label class="form-check-label" for="enabled">啟用</label>
+                    <span class="text-danger" id="enabledError"></span>
+                </div>
+            </div>
+            <button type="button" id="saveBtn" class="btn btn-success">更新</button>
+            <button type="button" id="cancelFormBtn" class="btn btn-light">取消</button>
+        </form>
+    </div>
+</div>
+
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>群組名稱</th>
+            <th>狀態</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody id="groupTableBody">
+        @foreach (var group in Model)
+        {
+            <tr>
+                <td>@group.GroupName</td>
+                <td>@(group.Enabled ? "啟用" : "停用")</td>
+                <td>
+                    <button class="btn btn-sm btn-primary edit-group" data-id="@group.Id">編輯</button>
+                    <button class="btn btn-sm btn-danger delete-group" data-id="@group.Id">刪除</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmModalLabel">刪除確認</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                你確定要刪除這個群組嗎？
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">刪除</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="deleteErrorModal" tabindex="-1" aria-labelledby="deleteErrorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteErrorModalLabel">刪除失敗</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="errorConfirmModal" tabindex="-1" aria-labelledby="errorConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorConfirmModalLabel">操作失敗</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                無法將管理員群組停用。
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+    $(document).ready(function () {
+
+        $("#showCreateFormBtn").click(function () {
+            showForm("新增群組", null);
+        });
+
+        $("#cancelFormBtn").click(function () {
+            $("#groupFormContainer").addClass('d-none');
+        });
+
+        $("#saveBtn").click(function () {
+            var groupId = $("#groupId").val();
+            var enabledValue = $("#enabled").is(":checked");
+
+            if (groupId === "1" && !enabledValue) {
+
+                $('#errorConfirmModal').modal('show');
+                return;
+            }
+
+            var formData = $("#groupForm").serializeArray();
+
+            formData = formData.filter(function (item) {
+                return item.name !== "Enabled";
+            });
+            formData.push({ name: "Enabled", value: enabledValue });
+
+            if (!$("#groupId").val()) {
+                formData = formData.filter(function (item) {
+                    return item.name !== "Id";
+                });
+            }
+
+            var url = $("#groupId").val() ? '@Url.Action("Edit", "Groups")' : '@Url.Action("Create", "Groups")';
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: $.param(formData),
+                success: function (result) {
+                    if (result.success) {
+                        location.reload();
+                    } else {
+
+                        displayErrors(result.errors);
+                    }
+                },
+                error: function (error) {
+                    displayErrors([error.responseText]);
+                }
+            });
+        });
+
+        $(document).on('click', '.edit-group', function () {
+            var id = $(this).data("id");
+            $.ajax({
+                url: '@Url.Action("Edit", "Groups")',
+                type: 'GET',
+                data: { id: id },
+                success: function (data) {
+                    if (data && data.success) {
+                        showForm("編輯群組", data.group);
+                    } else {
+                        alert("無法取得群組資料：" + (data.message || "未知錯誤"));
+                    }
+                },
+                error: function (error) {
+                    alert("無法取得群組資料：" + error.responseText);
+                }
+            });
+        });
+
+
+        var deleteId;
+
+        $(document).on('click', '.delete-group', function () {
+            deleteId = $(this).data("id");
+            $('#deleteConfirmModal').modal('show');
+        });
+
+        $('#confirmDeleteBtn').click(function () {
+
+            $.ajax({
+                url: '@Url.Action("Delete", "Groups")',
+                type: 'POST',
+                data: { id: deleteId },
+                success: function (result) {
+                    if (result.success) {
+                        $('#deleteConfirmModal').modal('hide');
+                        location.reload();
+                    } else {
+                        $('#deleteConfirmModal').modal('hide');
+                        $('#deleteErrorModal .modal-body').text(result.message);
+                        $('#deleteErrorModal').modal('show');
+                    }
+                },
+                error: function (error) {
+                    $('#deleteConfirmModal').modal('hide');
+                    $('#deleteErrorModal .modal-body').text("刪除失敗：" + error.responseText);
+                    $('#deleteErrorModal').modal('show');
+                }
+            });
+        });
+
+        function showForm(title, group) {
+            $("#formTitle").text(title);
+            $("#groupFormContainer").removeClass('d-none');
+            clearForm();
+
+            if (group) {
+                $("#groupId").val(group.Id);
+                $("#groupName").val(group.GroupName);
+                $("#enabled").prop('checked', group.Enabled);
+            }
+        }
+
+        function clearForm() {
+            $("#groupId").val("");
+            $("#groupName").val("");
+            $("#enabled").prop('checked', true);
+            $("#nameError").text("");
+            $("#enabledError").text("");
+        }
+
+        function displayErrors(errors) {
+
+            $("#nameError").text("");
+            $("#enabledError").text("");
+
+            if (errors && errors.length > 0) {
+                errors.forEach(function (error) {
+                    if (error.includes("群組名稱")) {
+                        $("#nameError").text(error);
+                    }
+                    if (error.includes("Enabled")) {
+                        $("#enabledError").text(error);
+                    }
+                });
+            }
+        }
+    });
+    </script>
+}

@@ -1,0 +1,128 @@
+﻿@model List<CoffeeShop.Models.ViewModels.MenuVm>
+
+<style>
+    body {
+        background-color: #f7f7f7;
+    }
+
+    .container {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        height: 700px;
+        width: 1200px;
+        margin: 30px auto;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-top:300px;
+    }
+
+    h1 {
+        margin-bottom: 20px;
+    }
+
+    .menu-item {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+        .menu-item img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-item p {
+            margin: 5px 0;
+        }
+
+    .nav-tabs {
+        margin-bottom: 20px;
+    }
+
+        .nav-tabs .nav-link {
+            border: 1px solid #ddd;
+            border-bottom-color: transparent;
+        }
+
+            .nav-tabs .nav-link.active {
+                background-color: #fff;
+                border-color: #ddd #ddd #fff;
+            }
+
+    .tab-content {
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        max-height: 500px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+        a:hover {
+            text-decoration: underline;
+            color: inherit;
+        }
+</style>
+
+<div class="container">
+    <h1 class="text-center">點餐區</h1>
+
+    <!-- 使用 ViewModel 的 Categories 屬性 -->
+    <ul class="nav nav-tabs" id="myTabContent" role="tablist">
+        @foreach (var category in Model)
+        {
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(category == Model.First() ? "active" : "")"
+                        id="@Html.Id("tab-" + category.CategoryId)"
+                        data-bs-toggle="tab"
+                        data-bs-target="#@Html.Id("pane-" + category.CategoryId)"
+                        type="button" role="tab"
+                        aria-controls="@Html.Id("pane-" + category.CategoryId)"
+                        aria-selected="@(category == Model.First())">
+                    @category.CategoryName
+                </button>
+            </li>
+        }
+    </ul>
+
+    <!-- 使用 ViewModel 的 Categories 屬性 -->
+    <div class="tab-content" id="myTabContent">
+        @foreach (var category in Model)
+        {
+            <div class="tab-pane fade @(category == Model.First() ? "show active" : "")"
+                 id="@Html.Id("pane-" + category.CategoryId)"
+                 role="tabpanel"
+                 aria-labelledby="@Html.Id("tab-" + category.CategoryId)">
+                <div class="row">
+                    @foreach (var menu in category.Menus)
+                    {
+                        <div class="col-md-3 menu-item">
+                            <a href="@Url.Action("Order", "Orders", new { id = menu.Id })">
+                                <img src="@Url.Content("https://localhost:44382/uploads/Products/" + menu.FileName)" alt="@menu.ItemCName" class="img-fluid" />
+                                <p>@menu.ItemCName</p>
+                                <p>@menu.ItemEName</p>
+                                <p>價格: @menu.Price.ToString("C0")</p>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+@section styles {
+    <link href="~/Content/style.css" rel="stylesheet" />
+}

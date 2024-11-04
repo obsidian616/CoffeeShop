@@ -1,0 +1,341 @@
+﻿@model List<CoffeeShop.Models.CartItem>
+
+<style>
+    body {
+        margin: 0;
+        padding-bottom: 60px; /* 預留空間給 footer */
+    }
+
+    footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: #f1f1f1;
+        text-align: center;
+        padding: 10px;
+    }
+</style>
+
+<section class="h-100">
+    <div class="container h-100 py-5">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-10" style="margin-top: 100px">
+                <h3 class="fw-normal mb-0">購物車</h3>
+                <form id="testForm">
+                    @if (Model != null && Model.Any())
+                    {
+                        int index = 0;
+                        foreach (var item in Model)
+                        {
+                            @Html.Hidden($"items[{index}].ProductId", item.ProductId)
+                            @Html.Hidden($"items[{index}].ItemEName", item.ItemEName)
+                            @Html.Hidden($"items[{index}].ProductName", item.ProductName)
+                            @Html.Hidden($"items[{index}].Price", item.Price)
+                            @Html.HiddenFor(x => x.FirstOrDefault().Price, item.Price)
+                            @*@Html.Hidden($"items[{index}].Remark", item.Remark)*@
+
+
+                            <div id="cart-item-@item.ProductId" class="card rounded-3 mb-4">
+                                <!-- 每個產品用 id 來標識 -->
+                                <div class="card-body p-4">
+                                    <div class="row d-flex justify-content-between align-items-center">
+                                        <div class="col-md-2 col-lg-2 col-xl-2">
+                                            <img src="https://localhost:44382/uploads/Products/@item.ImageFileName" alt="@item.ProductName" style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ddd; border-radius: 5px; padding: 5px;">
+                                        </div>
+
+                                        <div class="col-md-3 col-lg-3 col-xl-3">
+                                            <p class="lead fw-normal mb-2">@item.ProductName</p>
+                                            <p class="text-muted small">@item.ItemEName</p>  <!-- 新增此行顯示英文名稱 -->
+                                        </div>
+
+                                        <div class="col-md-3 col-lg-2 col-xl-2 d-flex align-items-center">
+                                            <!-- 減少數量按鈕 -->
+                                            <button type="button" class="btn btn-outline-secondary btn-sm px-2" onclick="updateQuantity(@item.ProductId, -1)">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+
+                                            <!-- 數量輸入框 -->
+                                            <input min="0" id="quantity-@item.ProductId" name="items[@index].Quantity" value="@item.Quantity" type="number" class="form-control form-control-sm mx-2" style="width: 60px;" readonly />
+
+                                            <!-- 增加數量按鈕 -->
+                                            <button type="button" class="btn btn-outline-secondary btn-sm px-2" onclick="updateQuantity(@item.ProductId, 1)">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+
+                                        <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                                            <h5 class="mb-0 ItemPriceTotal">@item.TotalPrice.ToString("C")</h5>
+                                        </div>
+
+                                        <div class="col-md-2 col-lg-2 col-xl-2 text-end">
+                                            <!-- 垃圾桶按鈕 -->
+                                            <a href="javascript:void(0);" class="text-danger" onclick="removeFromCart(@item.ProductId)">
+                                                <i class="fas fa-trash fa-lg"></i>
+                                            </a>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            index++;
+                        }
+                    }
+                    else
+                    {
+                        <p>購物車是空的。</p>
+                    }
+                    <input type="text" class="form-control" name="discountcode" placeholder="請輸入折扣代碼" required><br />
+                </form>
+                <!-- 桌號選擇 -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <label for="tableSelect" class="form-label">選擇桌號</label>
+                        <select id="tableSelect" name="tableSelect" class="form-select">
+                            <option value="">選擇桌號</option>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <option value="@i">桌號 @i</option>
+                            }
+
+                        </select>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div style="float:left;"><h5 class="mb-0" id="DivTotalPrice"></h5> </div>
+                        <button type="button" style="float:inline-end;" class="btn btn-warning btn-block btn-lg" onclick="submitOrder()">
+                            送出訂單
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@*優惠有成功的話跳通知*@
+
+
+
+<!-- 備註模態框 -->
+<!--<div class="modal fade" id="remarkModal" tabindex="-1" aria-labelledby="remarkModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="remarkModalLabel">填寫備註</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea id="remarkTextarea" class="form-control" rows="4" placeholder="請輸入備註..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="saveRemark()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>-->
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+@if (TempData["DiscountMessage"] != null)
+{
+    <script>
+        alert('@TempData["DiscountMessage"]');
+    </script>
+}
+
+@section scripts{
+    <script>
+    $(document).ready(function () {
+        calculateCartPrice();
+    })
+var currentProductId;
+function setCurrentProductId(productId) {
+        currentProductId = productId; // 設定當前操作的產品ID
+    }
+
+function updateQuantity(productId, delta) {
+    var quantityInput = document.getElementById('quantity-' + productId);
+    var currentQuantity = parseInt(quantityInput.value);
+    var newQuantity = currentQuantity + delta;
+
+    // 確保數量不低於1
+    if (newQuantity < 1) {
+        newQuantity = 1; // 如果嘗試減少到0，則將數量設置為1
+    }
+
+    // 更新數量輸入框
+    quantityInput.value = newQuantity;
+
+    // 發送 Ajax 更新後端購物車中的數量
+    $.ajax({
+        url: '@Url.Action("UpdateCartQuantity", "Orders")',  // 你的後端更新數量的控制器方法
+        type: 'POST',
+        data: {
+            productId: productId,
+            quantity: newQuantity,
+            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+        },
+        success: function(response) {
+            if (response.success) {
+                // 重新顯示新的總價
+                $('#cart-item-' + productId).find('.mb-0').text(response.totalPrice);
+
+                // 更新導航欄中的購物車總數量
+                $('#cartItemCount').text(response.totalItemCount);
+
+                calculateCartPrice();
+            }
+        },
+        error: function() {
+            Swal.fire('錯誤', '更新數量時發生錯誤。', 'error');
+        }
+    });
+}
+
+
+    @*function submitOrder() {
+        var tableNumber = document.getElementById('tableSelect').value;
+        var form = new FormData($('#testForm')[0]);
+        if (!tableNumber) {
+            Swal.fire('錯誤', '請選擇桌號。', 'error');
+            return;
+        }
+
+        $.ajax({
+            url: '@Url.Action("CreateOrder", "Orders")' + '?tableNumber=' + tableNumber,
+            type: 'POST',
+            data: form,
+            contentType: false,    // 防止 jQuery 設置錯誤的 Content-Type 標頭
+            processData: false,    // 防止 jQuery 將 data 轉換為查詢字串
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire('成功', '訂單已送出！', 'success').then(function() {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('錯誤', response.message, 'error');
+                }
+            },
+            error: function() {
+                Swal.fire('錯誤', '送出訂單時發生錯誤。', 'error');
+            }
+        });
+    }*@
+
+function submitOrder() {
+    var tableNumber = document.getElementById('tableSelect').value;
+    var form = new FormData($('#testForm')[0]);
+
+    if (!tableNumber) {
+        Swal.fire('錯誤', '請選擇桌號。', 'error');
+        return;
+    }
+
+
+    $.ajax({
+        url: '@Url.Action("CreateOrder", "Orders")' + '?tableNumber=' + tableNumber,
+        type: 'POST',
+        data: form,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            if (response.success) {
+                Swal.fire('成功', '訂單已送出！', 'success').then(function() {
+                    // 向伺服器發送清空購物車的請求
+                    $.ajax({
+                        url: '@Url.Action("ClearCart", "Orders")', // 假設您有一個清空購物車的伺服器端路由
+                        type: 'POST',
+                        success: function() {
+                            // 成功清空購物車後，移除所有購物車項目
+                            $('.card.rounded-3.mb-4').remove();  // 移除購物車的商品卡片
+                            $('#tableSelect').val('');  // 重置桌號選擇
+                            $('#testForm')[0].reset();  // 重置表單
+                            $('#DivTotalPrice').text('總金額： NT$0');  // 將總金額重置為0
+                            $('#cartItemCount').text('0');  // 假設您的購物車數字的 ID 是 cartCount
+
+
+                            // 導向首頁的Index頁面
+                            window.location.href = '@Url.Action("Index", "Home")';  // 導向首頁
+                        },
+                        error: function() {
+                            Swal.fire('錯誤', '清空購物車時發生錯誤。', 'error');
+                        }
+                    });
+                });
+            } else {
+                Swal.fire('錯誤', response.message, 'error');
+            }
+        },
+        error: function() {
+            Swal.fire('錯誤', '送出訂單時發生錯誤。', 'error');
+        }
+    });
+}
+
+    function removeFromCart(productId) {
+    $.ajax({
+        url: '@Url.Action("RemoveFromCart", "Orders")',  // 指向你的後端控制器的刪除方法
+        type: 'POST',
+        data: {
+            productId: productId,
+            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() // 防止 CSRF 攻擊
+        },
+        success: function(response) {
+            if (response.success) {
+                // 移除購物車中的對應項目
+                $('#cart-item-' + productId).remove();
+                // 更新導航欄中的購物車總數量
+                $('#cartItemCount').text(response.totalItemCount);
+                calculateCartPrice();
+
+                // 檢查購物車是否空了
+                if (response.totalItemCount === 0) {
+                    // 如果購物車空了，顯示購物車是空的提示，並保留送出訂單按鈕
+                    $('.container .row').html(`
+                        <div class="col-10" style="margin-top: 100px">
+                            <h3 class="fw-normal mb-0">Shopping Cart</h3>
+                            <p>購物車是空的。</p>
+                            <div class="card">
+                                <div class="card-body">
+                                    <button type="button" class="btn btn-warning btn-block btn-lg" onclick="submitOrder()" disabled>
+                                        送出訂單
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+
+                } else {
+                    Swal.fire('成功', '商品已從購物車中刪除。', 'success');
+                }
+            }
+        },
+        error: function() {
+            Swal.fire('錯誤', '刪除商品時發生錯誤。', 'error');
+        }
+    });
+        }
+
+
+    function calculateCartPrice() {
+        var totalPrice = 0;
+        $.each($('.ItemPriceTotal'), function (i, e) {
+            let priceStr = $(e).text().substring(3).replace(',', '');
+            let price = parseInt(priceStr);
+            console.log($(e).text());
+            console.log(price);
+            totalPrice += price;
+        });
+        $('#DivTotalPrice').text("總金額： NT$"+totalPrice);
+
+    }
+
+    </script>
+}
+
+

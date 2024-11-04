@@ -1,0 +1,88 @@
+﻿@model IEnumerable<CoffeeShop.Backend.Models.EFModels.Order>
+
+<h2>訂單紀錄</h2>
+
+<!-- 日期搜索表單 -->
+<form method="get" action="@Url.Action("Index")" class="form-inline mb-3" id="dateForm">
+    <label for="searchMonth" class="mr-2" style="font-size: 0.9em;">查詢月份:</label>
+    <input type="month" id="searchMonth" name="searchMonth" value="@ViewBag.SearchMonth" class="form-control form-control-sm mr-2" style="width: 150px;" onchange="this.form.submit()" />
+</form>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>訂單ID</th>
+            <th>訂單日期</th>
+            <th>桌號</th>
+            <th>訂單狀態</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@Html.ActionLink(order.Id.ToString(), "Details", new { id = order.Id })</td>
+                <td>@order.OrderDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <td>@order.TableNumber</td>
+                <td>
+                    @switch (order.Status)
+                    {
+                        case 1:
+                            <text>完成</text>;
+                            break;
+                        case 2:
+                            <text>進行中</text>;
+                            break;
+                        case 3:
+                            <text>取消</text>;
+                            break;
+                        default:
+                            <text>未知狀態</text>;
+                            break;
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- 分頁控制 -->
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        <!-- 第一頁按鈕 -->
+        <li class="page-item @(ViewBag.HasPreviousPage ? "" : "disabled")">
+            <a class="page-link" href="@Url.Action("Index", new { page = 1, searchMonth = ViewBag.SearchMonth })" aria-label="First">
+                <span aria-hidden="true">&laquo;&laquo;</span>
+            </a>
+        </li>
+
+        <!-- 上一頁按鈕 -->
+        <li class="page-item @(ViewBag.HasPreviousPage ? "" : "disabled")">
+            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.PageNumber - 1, searchMonth = ViewBag.SearchMonth })" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+
+        <!-- 頁數按鈕 -->
+        @for (int i = 1; i <= ViewBag.PageCount; i++)
+        {
+            <li class="page-item @(i == ViewBag.PageNumber ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = i, searchMonth = ViewBag.SearchMonth })">@i</a>
+            </li>
+        }
+
+        <!-- 下一頁按鈕 -->
+        <li class="page-item @(ViewBag.HasNextPage ? "" : "disabled")">
+            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.PageNumber + 1, searchMonth = ViewBag.SearchMonth })" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+
+        <!-- 最後一頁按鈕 -->
+        <li class="page-item @(ViewBag.HasNextPage ? "" : "disabled")">
+            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.PageCount, searchMonth = ViewBag.SearchMonth })" aria-label="Last">
+                <span aria-hidden="true">&raquo;&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>

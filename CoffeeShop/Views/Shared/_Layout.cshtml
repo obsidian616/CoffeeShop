@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - 我的 ASP.NET 應用程式</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @RenderSection("styles", required: false)
+
+    <link href="~/Content/index.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
+    <link href="~/Content/font-awesome.css" rel="stylesheet" />
+
+    
+</head>
+<body>
+    <!-- navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top" id="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/Home/Index" id="logo"><img src="~/img/logo/LOGO_04.png" alt="" style="width: 90px; height: 75px; "></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span><i class="fa-solid fa-bars" style="color: white; font-size: 23px;"></i></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Orders/Cart">
+                            <i class="fa-solid fa-cart-shopping"></i> 購物車
+                            <span id="cartItemCount" class="badge bg-danger">@ViewBag.CartItemCount</span> <!-- 這裡顯示購物車中的總數量 -->
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="/Home/Index">主頁</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Orders/Index">點餐</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Home/Contact">聯絡</a>
+                    </li>
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">@Html.ActionLink("會員", "MemberProfile", "Members", new { area = "" }, new { @class = "nav-link" })</li>
+                        <li class="nav-item"><a href="/Members/MemberProfile" class="nav-link">您好，@(User.Identity.Name)</a></li>
+                        <li class="nav-item">@Html.ActionLink("登出", "Logout", "Members", new { area = "" }, new { @class = "nav-link" })</li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">@Html.ActionLink("會員", "Login", "Members", new { area = "" }, new { @class = "nav-link" })</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- navbar -->
+    <div class="body-content">
+        @RenderBody()
+    </div>
+    <footer id="footer">
+        <div class="socail-links text-center">
+            <i class="fa-brands fa-twitter"></i>
+            <i class="fa-brands fa-facebook-f"></i>
+            <i class="fa-brands fa-instagram"></i>
+            <i class="fa-brands fa-youtube"></i>
+            <i class="fa-brands fa-pinterest-p"></i>
+        </div>
+        <div class="copyright text-center">
+            &copy; Copyright <strong><span>Coffee Shop</span></strong>. All Rights Reserved
+        </div>
+    </footer>
+    <!-- footer -->
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap") <!-- 確保 Bootstrap JS 被引入 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.0/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+
+<script>
+    // 當用戶點擊「加入購物車」時
+    function addToCart(productId) {
+        var quantity = document.getElementById("quantity").value;
+
+        $.ajax({
+            url: '@Url.Action("AddToCart", "Orders")',
+            type: 'POST',
+            data: {
+                id: productId,
+                quantity: quantity,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function (response) {
+                Swal.fire({
+                    title: '已加入購物車！',
+                    text: '商品已成功加入購物車。',
+                    icon: 'success',
+                    confirmButtonText: '確定'
+                });
+
+                // 更新購物車數量
+                updateCartItemCount();
+            },
+            error: function () {
+                Swal.fire({
+                    title: '錯誤',
+                    text: '加入購物車時發生錯誤。',
+                    icon: 'error',
+                    confirmButtonText: '確定'
+                });
+            }
+        });
+    }
+
+    function updateCartItemCount() {
+        $.ajax({
+            url: '@Url.Action("GetCartItemCount", "Orders")',  // 調用後端 Action 獲取商品總數量
+            type: 'GET',
+            success: function (data) {
+                $('#cartItemCount').text(data.count);  // 更新購物車數量
+            }
+        });
+    }
+
+    // 頁面加載時自動更新購物車數量
+    $(document).ready(function() {
+        updateCartItemCount();  // 頁面加載時更新購物車數量
+    });
+
+    // 當用戶按瀏覽器的返回按鈕（上一步）時，強制更新購物車數量
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted || (window.performance && window.performance.navigation.type == 2)) {
+            updateCartItemCount();  // 當用戶返回頁面時觸發
+        }
+    });
+</script>

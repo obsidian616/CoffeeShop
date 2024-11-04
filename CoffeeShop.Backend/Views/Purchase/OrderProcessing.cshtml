@@ -1,0 +1,148 @@
+﻿@model IEnumerable<CoffeeShop.Backend.Models.EFModels.Order>
+
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+    .list-group-item {
+        background-color: transparent;
+        border: none;
+        font-size: 1rem;
+        padding: 0.5rem 0;
+    }
+
+
+    .container {
+        background-color: #f9f9f9;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+
+    .order-header {
+        background-color: #E0CBB3;
+        color: white;
+        padding: 1rem;
+        border-radius: 10px 10px 0 0;
+        text-align: center;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    #btn1 {
+        background-color: #E0CBB3;
+    }
+    #btn2 {
+        background-color: #E0CBB3;
+    }
+</style>
+
+<section class="h-100">
+    <div class="container h-100 py-5">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-10">
+                <h3 class="fw-normal mb-4 text-center">進行中訂單</h3>
+                <form id="orderForm">
+                    @Html.AntiForgeryToken()
+                </form>
+
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var order in Model)
+                    {
+                        <div id="order-item-@order.Id" class="card mb-4">
+                            <div class="order-header">
+                                <h6>桌號: @order.TableNumber</h6>
+                                <h6>訂單時間: @order.OrderDate.ToString("yyyy-MM-dd HH:mm")</h6>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="row d-flex justify-content-between align-items-center">
+                                    <!-- 商品名稱區塊 -->
+                                    <div class="col-md-7 col-lg-6 col-xl-6">
+                                        <ul class="list-group list-group-flush">
+                                            @foreach (var item in order.OrderItems)
+                                            {
+                                                <li class="list-group-item">
+                                                    <strong>@item.ItemCName</strong> x @item.Quantity
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+
+                                    <!-- 操作按鈕 -->
+                                    <div class="col-md-5 col-lg-4 col-xl-4 d-flex justify-content-end align-items-center">
+                                        <button class="btn btn-success btn-sm me-2" id="btn1" onclick="markAsCompleted(@order.Id)">
+                                            <i class="fas fa-check"></i> 完成
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" id="btn2" onclick="cancelOrder(@order.Id)">
+                                            <i class="fas fa-times"></i> 取消訂單
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-center">目前沒有進行中的訂單。</p>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function markAsCompleted(orderId) {
+    $.ajax({
+        url: '@Url.Action("UpdateStatus", "Purchase")',  // 指向後端的 UpdateStatus 動作
+        type: 'POST',
+        data: {
+            id: orderId,    // 訂單 ID
+            status: 1,      // 將狀態改為 1，表示完成訂單
+            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() // 傳遞 AntiForgeryToken
+        },
+        success: function (response) {
+            console.log("訂單 " + orderId + " 已標記為完成");
+            $("#order-item-" + orderId).remove();  // 可選：移除已完成的訂單
+        },
+        error: function (xhr, status, error) {
+            console.error("更新失敗: " + error);
+        }
+    });
+}
+
+function cancelOrder(orderId) {
+    $.ajax({
+        url: '@Url.Action("UpdateStatus", "Purchase")',  // 指向後端的 UpdateStatus 動作
+        type: 'POST',
+        data: {
+            id: orderId,    // 訂單 ID
+            status: 3,      // 將狀態改為 3，表示取消訂單
+            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() // 傳遞 AntiForgeryToken
+        },
+        success: function (response) {
+            console.log("訂單 " + orderId + " 已取消");
+            $("#order-item-" + orderId).remove();  // 可選：移除已取消的訂單
+        },
+        error: function (xhr, status, error) {
+            console.error("更新失敗: " + error);
+        }
+    });
+}
+
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+

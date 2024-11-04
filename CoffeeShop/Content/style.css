@@ -1,0 +1,107 @@
+﻿html, body {
+    height: 100%; /* 設定 html 和 body 高度為 100% */
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.bg-primary {
+    background-color: #082213 !important; /* 使用新顏色 */
+}
+
+.body-content {
+    /*flex-grow: 1;  讓內容占滿剩餘空間 
+    padding-top: 100px;
+    margin-top: 80px;  导航栏的高度 */
+}
+
+body {
+    /* ---old---*/
+    /*background-color: #f7f5f2;*/ /* 淡咖啡色背景 */
+    /*font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;*/ /* 修正 padding 的設定 */
+    /*height: 100vh;*/ /* 讓 body 佔滿整個螢幕高度 */
+    /*display: flex;*/ /* 使用 Flexbox */
+    /*justify-content: center;*/ /* 水平置中 */
+    /*align-items: center;*/ /* 垂直置中 */
+    /*flex-direction: column;*/ /* 保持子元素從上到下的排列 */
+
+    background-color: #f5f3f0; /* 淡咖啡色背景 */
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0; /* 修正 padding 的設定 */
+    height: 100vh; /* 讓 body 佔滿整個螢幕高度 */
+    display: flex; /* 使用 Flexbox */
+    justify-content: center; /* 水平置中 */
+    align-items: center; /* 垂直置中 */
+    flex-direction: column; /* 保持子元素從上到下的排列 */
+    padding-top: 70px;
+}
+
+h2 {
+    /*color: #6b4f35;*/ /*深咖啡色標題*/
+    color: white; 
+}
+
+.btn {
+    /*width: 200px;
+    height: 36px;
+    background: transparent;
+    border: 2px solid #505637;
+    color: #505637;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: 0.5s;
+    cursor: pointer;*/
+
+    position: relative;
+    z-index: 1;
+    min-width: 200px;
+    /*本來按鈕的底色*/
+    background: #f7f5f2;
+    border: 2px solid #092516;
+    color: black !important;
+    text-align: center;
+    padding: 12px 20px;
+}
+
+    .btn:hover {
+        background: #505637;
+        color: white;
+    }
+
+.btn1 {
+    width: 200px;
+    height: 36px;
+    background: transparent;
+    border: 2px solid #505637;
+    color: #505637;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: 0.5s;
+    cursor: pointer;
+}
+
+#footer {
+    /*position: fixed !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    background-color: #f8f9fa;
+    margin: 0 !important;
+    padding: 10px 0 !important;
+    text-align: center;
+    z-index: 1000;*/  /*確保它在最上層*/ 
+
+    bottom: 0 !important;
+    width: 100% !important;
+    background-color: #f4f4ea;
+    margin: 0 !important;
+    padding: 10px 0 !important;
+    text-align: center;
+}
+
+/* 新增 login-btn class 的設定 */
+.login-btn {
+    padding: 0;
+}

@@ -1,0 +1,79 @@
+﻿@model CoffeeShop.Backend.Models.EFModels.Menu
+
+@{
+    ViewBag.Title = "編輯商品";
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="row">
+        <!-- 左側圖片預覽與上傳 -->
+        <div class="col-md-6">
+            <div id="imagePreviewContainer" style="width: 300px; height: 400px; border: 2px dashed #ccc; display: flex; justify-content: center; align-items: center; background-color: #f8f8f8; position: relative;">
+                <img id="imagePreview" src="@Url.Content("https://localhost:44382/uploads/Products/" + Model.FileName)" alt="預覽圖片" style="max-width: 100%; max-height: 100%; display: block;" />
+            </div>
+            <br />
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('imageUpload').click();">上傳照片</button>
+            <input type="file" id="imageUpload" name="imageUpload" style="display:none;" accept="image/*" class="form-control" onchange="showPreview(event);" />
+        </div>
+
+        <!-- 右側表單內容 -->
+        <div class="col-md-6">
+            <table class="table table-bordered">
+                <tr>
+                    <td>商品名稱</td>
+                    <td>@Html.TextBoxFor(m => m.ItemCName, new { @class = "form-control", placeholder = "自動抓值" })</td>
+                </tr>
+                <tr>
+                    <td>商品英文名稱</td>
+                    <td>@Html.TextBoxFor(m => m.ItemEName, new { @class = "form-control", placeholder = "自動抓值" })</td>
+                </tr>
+                <tr>
+                    <td>商品分類</td>
+                    <td>@Html.DropDownListFor(m => m.CategoryID, ViewBag.Categories as SelectList, "請選擇分類", new { @class = "form-control" })</td>
+                </tr>
+                <tr>
+                    <td>商品價格</td>
+                    <td>@Html.TextBoxFor(m => m.Price, new { @class = "form-control", placeholder = "自動抓值" })</td>
+                </tr>
+                <tr>
+                    <td>商品描述</td>
+                    <td>@Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "自動抓值" })</td>
+                </tr>
+                <tr>
+                    <td>上架</td>
+                    <td>
+                        <div>
+                            <label>
+                                @Html.RadioButtonFor(m => m.Enabled, true, new { @class = "form-check-input" })
+                                上架
+                            </label>
+                            <label>
+                                @Html.RadioButtonFor(m => m.Enabled, false, new { @class = "form-check-input" })
+                                下架
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="form-group text-center">
+        <button type="submit" class="btn btn-success">送出</button>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">取消</a>
+    </div>
+}
+
+<script>
+    function showPreview(event) {
+        var file = event.target.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imagePreview').src = e.target.result; // 顯示預覽圖片
+            }
+            reader.readAsDataURL(file); // 讀取圖片並轉換為 DataURL
+        }
+    }
+</script>

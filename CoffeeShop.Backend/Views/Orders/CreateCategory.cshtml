@@ -1,0 +1,75 @@
+﻿@model CoffeeShop.Backend.Models.EFModels.MenuCategory
+
+<h2>新增商品分類</h2>
+
+<!-- 新增分類的表單 -->
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        <!-- 修改標籤的顯示名稱 -->
+        <label for="Name">分類名稱</label>
+        @Html.TextBoxFor(model => model.Name, new { @class = "form-control", style = "width: 300px;" })  <!-- 設置寬度 -->
+    </div>
+    <button type="submit" class="btn btn-primary">保存</button>
+}
+
+<hr />
+
+<h3>現有商品分類</h3>
+
+<!-- 顯示現有分類的列表 -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>分類名稱</th>
+            <th>啟用狀態</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ if (ViewBag.Categories != null)
+            {
+                foreach (var category in ViewBag.Categories)
+                {
+                    <tr>
+                        <td>@category.Name</td>
+                        <td>@(category.Enabled ? "啟用" : "停用")</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <!-- 啟用/停用按鈕 -->
+                                @using (Html.BeginForm("ToggleCategoryStatus", "Orders", new { id = category.Id }, FormMethod.Post))
+                                {
+                                    <button type="submit" class="btn @(category.Enabled ? "btn-warning" : "btn-success")">
+                                        @(category.Enabled ? "停用" : "啟用")
+                                    </button>
+                                }
+                                <!-- 刪除按鈕 -->
+                                @using (Html.BeginForm("DeleteCategory", "Orders", new { id = category.Id }, FormMethod.Post))
+                                {
+                                    <button type="submit" class="btn btn-outline-danger">刪除</button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        }
+    </tbody>
+</table>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        var errorMessage = "@ViewBag.ErrorMessage";
+        if (errorMessage ) {
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: errorMessage, // 使用 ViewBag 的錯誤訊息
+                showConfirmButton: false
+            });
+        }
+    });
+
+</script>

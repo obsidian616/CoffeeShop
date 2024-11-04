@@ -1,0 +1,17 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4>請員工收確認信件,點連結開通</h4>
+
+<p>以下為假設收到信件</p>
+
+@if (!string.IsNullOrEmpty(ViewBag.ConfirmationUrl))
+{
+    <p>請點擊以下連結來啟用您的帳號：</p>
+    <a href="@ViewBag.ConfirmationUrl">點擊這裡啟用帳號</a>
+}
+else
+{
+    <p>無法生成確認連結，請稍後再試。</p>
+}

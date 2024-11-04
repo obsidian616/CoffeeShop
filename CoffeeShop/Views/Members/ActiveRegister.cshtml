@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = "RegisterConfirm";
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        background-image: url('/img/PG/room.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    .body-content {
+        flex: 1;
+        display: flex;
+        align-items: center; /* 垂直居中 */
+        justify-content: center; /* 水平居中 */
+        text-align: center; /* 文字居中 */
+        color: white; /* 文字颜色 */
+        margin-bottom: 50px; /* 增加底部间距 */
+        min-height: calc(100vh - 150px); /* 根据您的导航栏和页脚高度调整 */
+        margin: 0 20px; /* 左右边距，避免内容贴边 */
+    }
+
+    h2 {
+        margin: 20px 0; /* 上下边距 */
+        color: white; /* 标题颜色 */
+    }
+
+    #footer {
+        background-color: #f7f5f2;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .message-box {
+        background-color: rgba(0, 0, 0, 0.7); /* 半透明黑色背景 */
+        border-radius: 10px; /* 圆角 */
+        padding: 20px; /* 内边距 */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* 阴影 */
+    }
+</style>
+
+<div class="body-content">
+    <div class="message-box">
+        <h2>驗證成功,可以開始使用會員功能!</h2>
+    </div>
+</div>
+
+

@@ -1,0 +1,113 @@
+﻿@model CoffeeShop.Models.Dtos.MemberDto
+
+@{
+    ViewBag.Title = "MemberProfile";
+}
+
+<style>
+    html, body {
+        font-family: Arial, sans-serif;
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        background-image: url('/img/PG/room.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    .body-content {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #footer {
+        background-color: #f7f5f2;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .profile-container {
+        display: flex;
+        border-radius: 8px;
+        padding: 100px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        max-width: 1200px;
+        margin: 150px auto;
+        align-items: flex-start;
+        /*背景圖*/
+        background-color: rgba(0, 0, 0, 0.5); /* 设置为半透明黑色 */
+        background-size: cover; /* 或 contain */
+    }
+
+    .sidebar {
+        width: 100px; /* 侧边栏宽度 */
+        margin-right: 30px; /* 侧边距 */
+    }
+
+        .sidebar-button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #505637; /* 背景色 */
+            color: white; /* 文字颜色 */
+            border: none; /* 去掉边框 */
+            border-radius: 5px; /* 圆角 */
+            cursor: pointer; /* 鼠标指针 */
+        }
+
+            .sidebar-button:hover {
+                background-color: rgba(80, 86, 55, 0.8); /* 悬停效果 */
+            }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: white;
+    }
+
+    .profile-container h2 {
+        color: white;
+        text-align: left; /* 文字靠左对齐 */
+        font-size: 32px;
+        margin-left: 110px; /* 侧边距 */
+    }
+
+    .profile-container p {
+        color: white;
+        text-align: left; /* 文字靠左对齐 */
+        font-size: 24px;
+    }
+
+    .content {
+        margin-top: -370px; /* 调整为你需要的值 */
+        flex: 1; /* 使内容区域占据剩余空间 */
+        margin-left: -50px; /* 添加左侧间距 */
+    }
+</style>
+
+
+<div class="sidebar">
+    <a href="/Members/EditProfile/" class="btn sidebar-button">會員資料修改</a>
+    <a href="/Members/ChangePassword/" class="btn sidebar-button">修改密碼</a>
+    <a href="/Members/Birthdaycoupon/" class="btn sidebar-button">優惠券</a>
+    @*<a href="/Members/UseCoupon/" class="btn sidebar-button">優惠券功能測試</a>*@
+    <!-- 可以添加更多按钮 -->
+</div>
+
+<div class="profile-container">
+    <div class="content">
+        <h2>會員資料</h2>
+        <p>姓名: @Model.Name</p>
+        <p>電子郵件: @Model.Email</p>
+        <p>電話: @Model.Phone</p>
+        <p>生日: @Model.Birthday.ToString("yyyy/MM/dd")</p>
+        <p>性別: @(Model.Gender ? "男" : "女")</p>
+    </div>
+</div>
+
+

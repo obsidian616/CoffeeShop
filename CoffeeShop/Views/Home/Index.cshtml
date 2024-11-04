@@ -1,0 +1,167 @@
+﻿<body>
+    <div class="all-content">
+
+        <!-- home section -->
+        <section id="home" class="section mb-5">
+            <!-- 添加 mb-5 -->
+            <div class="content" style="background: url('/img/PG/room.png'); opacity: 0.8;">
+                <h3>Start Your Day With a Fresh Coffee</h3>
+                <p>
+                    新的一天從一杯香醇的咖啡開始，讓晨間的每個瞬間都充滿活力。無論是需要提振精神迎接挑戰，還是享受片刻的悠閒時光，一杯現煮咖啡都能帶給您溫暖的陪伴與鼓舞。
+                    <br>讓新鮮的咖啡喚醒您的每一個清晨！
+                </p>
+                <center>
+                    <form action="@Url.Action("Index", "Orders")" method="get">
+                        <button type="submit" button id="btn">Shop Now</button>
+                    </form>
+                </center>
+            </div>
+        </section>
+
+        <!-- menu -->
+        <section class="menu section mb-5" id="menu">
+            <div class="container">
+                <div class="heading3">Top Categories</div>
+            </div>
+            <div class="container" id="container2">
+                <div class="row">
+                    <div class="col-md-3 py-3 py-md-0">
+                        <div class="card">
+                            <img src="~/img/espresso.jpg" alt="">
+                            <div class="card-body">
+                                <div class="star text-center">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
+                                <h3>Espresso</h3>
+                                <!-- 金額移到中間 並移除購物車圖示 -->
+                                <p class="text-center">NT.100</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 py-3 py-md-0">
+                        <div class="card">
+                            <img src="~/img/americano.jpg" alt="">
+                            <div class="card-body">
+                                <div class="star text-center">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
+                                <h3>Americano</h3>
+                                <p class="text-center">NT.110 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 py-3 py-md-0">
+                        <div class="card">
+                            <img src="~/img/latte.jpg" alt="">
+                            <div class="card-body">
+                                <div class="star text-center">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
+                                <h3>Latte</h3>
+                                <p class="text-center">NT.130 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 py-3 py-md-0">
+                        <div class="card">
+                            <img src="~/img/mocha.jpg" alt="">
+                            <div class="card-body">
+                                <div class="star text-center">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
+                                <h3>Mocha</h3>
+                                <p class="text-center">NT.150 
+                            </div>
+                        </div>
+                    </div>
+                    <!-- More cards here -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- about section -->
+        <div class="about section mb-5" id="about">
+            <!-- 添加 mb-5 -->
+            <div class="container">
+                <div class="heading3">About <span>Us</span></div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <img src="~/img/PG/椅子.jpg" alt="" class="chair">
+                    </div>
+                    <div class="col-md-6 Special">
+                        <h3>歡迎!蔦苑咖啡廳!</h3>
+                        <p>
+                            這是一家溫馨的小型咖啡店，提供高品質的咖啡和手工甜點，擁有放鬆舒適的氛圍，是您享受悠閒時光或與朋友聚會的理想之地。
+                        </p>
+                        <button id="about-btn">Learn More.</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- our gallery -->
+        <div class="container mb-5" id="gallery">
+            <!-- 添加 mb-5 -->
+            <div class="heading3">
+                <h1>Our <span>Gallery</span></h1>
+            </div>
+            <div class="row" style="margin-top: 30px;">
+                <div class="col-md-4 py-3 py-md-0">
+                    <div class="card">
+                        <img src="~/img/image1.png" alt="">
+                    </div>
+                </div>
+                <div class="col-md-4 py-3 py-md-0">
+                    <div class="card">
+                        <img src="~/img/image3.png" alt="">
+                    </div>
+                </div>
+                <div class="col-md-4 py-3 py-md-0">
+                    <div class="card">
+                        <img src="~/img/image5.png" alt="">
+                    </div>
+                </div>
+                <!-- More images here -->
+            </div>
+        </div>
+        <a href="#" class="arrow"><i><img src="~/img/up-arrow.png" alt="" width="50"></i></a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+@section styles
+    {
+    <link href="~/Content/index.css" rel="stylesheet" />
+}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.getElementById("about-btn").addEventListener("click", function () {
+        Swal.fire({
+            title: "歡迎!",
+            text: "走進蔦苑咖啡廳，就彷彿踏入了一個被歲月細心保存的角落。這裡的裝潢以溫暖的復古風為主，木質桌椅與懷舊的燈具訴說著歲月的故事，牆上掛著老照片與古董裝飾品，彷彿在細語著那些美好的時光片段。",
+            imageUrl: "/img/PG/desk.jpg", // 使用根路徑或相對於網站根目錄的路徑
+            imageWidth: 400,
+            imageHeight: 200,
+            imageAlt: "Custom image"
+        });
+    });
+</script>

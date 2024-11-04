@@ -1,0 +1,150 @@
+﻿@model IEnumerable<CoffeeShop.Backend.Models.EFModels.Menu>
+
+<h2>菜單管理</h2>
+
+<!-- 使用 d-flex 讓按鈕和篩選選單併排 -->
+<div class="d-flex justify-content-between mb-3">
+    <!-- 左邊的「新增菜單項目」按鈕 -->
+    <div>
+        <a href="@Url.Action("Create")" class="btn btn-warning">新增菜單項目</a>
+    </div>
+
+    <!-- 右邊的篩選選單 -->
+    <div class="form-inline">
+        <select id="categoryDropdown" class="form-select form-select-sm" style="width: auto;">
+            <option value="">所有分類</option>
+            @foreach (var category in ViewBag.Categories)
+            {
+                <option value="@category.Value" @(ViewBag.SelectedCategoryId != null && ViewBag.SelectedCategoryId.ToString() == category.Value ? "selected" : "")>
+                    @category.Text
+                </option>
+            }
+        </select>
+    </div>
+</div>
+
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>商品圖片</th>
+            <th>商品名稱</th>
+            <th>價格</th>
+            <th>分類</th>
+            <th>編輯</th>
+            <th>刪除</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <img src="@Url.Content("https://localhost:44382/uploads/Products/" + item.FileName)" alt="@item.ItemCName" width="70" height="70" />
+                </td>
+                <td>@item.ItemCName (@item.ItemEName)</td>
+                <td>@item.Price</td>
+                <td>@item.MenuCategory.Name</td>
+                <td>
+                    <a href="@Url.Action("Edit", "Orders", new { id = item.Id })" class="btn btn-outline-success">
+                        <i class="fas fa-edit"></i> 編輯
+                    </a>
+                </td>
+                <td>
+                    @using (Html.BeginForm("Delete", "Orders", new { id = item.Id }, FormMethod.Post, new { id = "form-" + item.Id }))
+                    {
+                        <button type="button" class="btn btn-outline-danger" onclick="confirmDelete(@item.Id)">
+                            <i class="fas fa-trash"></i> 刪除
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+<!-- Bootstrap 5 分頁樣式 -->
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(ViewBag.HasPreviousPage ? "" : "disabled")">
+            <a class="page-link" href="@Url.Action("Index", new { page = 1, categoryId = ViewBag.SelectedCategoryId })" aria-label="First">
+                <span aria-hidden="true">&laquo;&laquo;</span>
+            </a>
+        </li>
+        <li class="page-item @(ViewBag.HasPreviousPage ? "" : "disabled")">
+            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.PageNumber - 1, categoryId = ViewBag.SelectedCategoryId })" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+
+        @for (int i = 1; i <= ViewBag.PageCount; i++)
+        {
+            <li class="page-item @(i == ViewBag.PageNumber ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = i, categoryId = ViewBag.SelectedCategoryId })">@i</a>
+            </li>
+        }
+
+        <li class="page-item @(ViewBag.HasNextPage ? "" : "disabled")">
+            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.PageNumber + 1, categoryId = ViewBag.SelectedCategoryId })" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        <li class="page-item @(ViewBag.HasNextPage ? "" : "disabled")">
+            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.PageCount, categoryId = ViewBag.SelectedCategoryId })" aria-label="Last">
+                <span aria-hidden="true">&raquo;&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function confirmDelete(id) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // 顯示刪除成功的提示框
+                Swal.fire({
+                    title: 'Deleted!',
+                    text: 'Your file has been deleted.',
+                    icon: 'success',
+                    timer: 5000, // 提示保留5秒
+                    timerProgressBar: true,
+                }).then(() => {
+                    // 延遲提交表單，確保提示框有足夠顯示時間
+                    setTimeout(function () {
+                        document.getElementById('form-' + id).submit();
+                    }, 500);
+                });
+            }
+        });
+    }
+
+</script>
+
+<script>
+// 監聽下拉選單的變化
+document.getElementById('categoryDropdown').addEventListener('change', function () {
+    var selectedCategoryId = this.value;
+    var url = '@Url.Action("Index")';
+
+    // 如果選擇了分類，將 categoryId 附加到 URL
+    if (selectedCategoryId) {
+        window.location.href = url + '?categoryId=' + selectedCategoryId;
+    } else {
+        // 如果沒有選擇分類，則移除 categoryId 參數
+        window.location.href = url;
+    }
+});
+</script>

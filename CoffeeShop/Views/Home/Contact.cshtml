@@ -1,0 +1,72 @@
+﻿@model CoffeeShop.Models.EFModels.GuestBook
+<section class="book" id="book">
+    <div class="container">
+
+        <div class="main-text">
+            <h1><span>B</span>ook</h1>
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-6 py-3 py-md-0">
+                <div class="card1">
+                    <img src="~/img/logo/LOGO1.png" alt="Logo Image" style="width: 450px; height: 450px;">
+                </div>
+            </div>
+
+            <div class="col-md-6 py-3 py-md-0">
+                <form id="bookingForm" action="/Home/Contact" method="post">
+                   <input type="text" class="form-control" name="name" placeholder="姓名" required ><br>
+                    @Html.ValidationMessageFor(model => model.Name) <!-- 顯示 Name 欄位的錯誤訊息 -->
+                    <input type="text" class="form-control" name="email" placeholder="Email" required ><br>
+                    @Html.ValidationMessageFor(model => model.Email) <!-- 顯示 Email 欄位的錯誤訊息 -->
+                    <input type="text" class="form-control" name="phone" placeholder="電話" required ><br>
+                    @Html.ValidationMessageFor(model => model.Phone) <!-- 顯示 Phone 欄位的錯誤訊息 -->
+                    <textarea class="form-control" rows="5" name="Message" placeholder="訊息"></textarea><br>
+                    @Html.ValidationMessageFor(model => model.Message) <!-- 顯示 Message 欄位的錯誤訊息 -->
+                    <input type="submit" value="送出" class="btn" id="submitBtn" required>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+@section styles{
+    <link href="~/Content/Contact.css" rel="stylesheet" />
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<!-- 引入 SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- JavaScript to trigger SweetAlert -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        var errorMessage = "@ViewBag.ErrorMessage";
+        var successMessage = "@ViewBag.SuccessMessage";
+
+        if (errorMessage) {
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: errorMessage, // 使用 ViewBag 的錯誤訊息
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+
+        if (successMessage) {
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: successMessage,
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    });
+</script>

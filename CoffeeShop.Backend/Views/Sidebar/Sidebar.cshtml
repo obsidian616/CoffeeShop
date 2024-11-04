@@ -1,0 +1,62 @@
+﻿@{
+    Layout = null;
+}
+@using CoffeeShop.Backend.Models.Components;
+@model List<CoffeeShop.Backend.Models.Components.SidebarMenu.NavItem>
+
+
+<!-- 側欄 -->
+
+<div id="sidebarMenu" class="sidebar">
+    <div class="logo-container">
+        <a href="@Url.Action("Index", "Home")" class="logo-link">
+            <img src="~/Img/logo/LOGO-03.png" alt="LOGO" class="logo" />
+            <span class="logo-text">Tsutaen Cafe</span>
+        </a>
+    </div>
+    <ul class="nav flex-column mt-3">
+        @foreach (var item in Model) 
+        {
+            
+            bool hasAccess = item.Roles.Any(role => User.IsInRole(role)) ||
+                             (item.SubItems != null && item.SubItems.Any(subItem => subItem.Roles.Any(role => User.IsInRole(role))));
+
+            if (hasAccess)
+            {
+                <li class="nav-item">
+                    @if (item.SubItems == null || !item.SubItems.Any(subItem => subItem.Roles.Any(role => User.IsInRole(role))))
+                    {
+                        <a class="nav-link" href="@item.Link">
+                            <i class="fa @item.Icon"></i>
+                            <span>@item.Name</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#@(item.Name.Replace(" ", "").ToLower())" role="button" aria-expanded="false" aria-controls="@item.Name.Replace(" ", "").ToLower()">
+                            <i class="fa @item.Icon"></i>
+                            <span>@item.Name</span>
+                        </a>
+
+                        <div class="collapse" id="@(item.Name.Replace(" ", "").ToLower())">
+                            <ul class="nav flex-column ms-3">
+                                @foreach (var subItem in item.SubItems)
+                                {
+                                    if (subItem.Roles.Any(role => User.IsInRole(role))) 
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="@subItem.Link">
+                                                <i class="fa @subItem.Icon"></i>
+                                                <span>@subItem.Name</span>
+                                            </a>
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    }
+                </li>
+            }
+        }
+    </ul>
+</div>

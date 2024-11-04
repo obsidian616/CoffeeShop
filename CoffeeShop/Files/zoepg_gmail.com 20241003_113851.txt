@@ -1,0 +1,8 @@
+﻿from:g01.webapp@gmail.com
+to:zoepg@gmail.com
+subject:[重設密碼通知]
+
+
+                Hi zoepg,<br />
+                請點擊此連結 <a href='https://localhost:44311/Members/ResetPassword?memberid=46&confirmCode=3b68f82639ea440cb5764761c43e7949' target='_blank'>我要重設密碼</a>，以進行重設密碼，如果您沒有提出申請，請忽略本信，謝謝。
+            

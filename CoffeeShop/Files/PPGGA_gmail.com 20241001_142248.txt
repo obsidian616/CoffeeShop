@@ -1,0 +1,8 @@
+﻿from:g01.webapp@gmail.com
+to:PPGGA@gmail.com
+subject:[重設密碼通知]
+
+
+                Hi PPGG,<br />
+                請點擊此連結 <a href='https://localhost:44311/Members/ResetPassword?memberid=45&confirmCode=37685f94eb4746c0b13665ffad7185a6' target='_blank'>我要重設密碼</a>，以進行重設密碼，如果您沒有提出申請，請忽略本信，謝謝。
+            

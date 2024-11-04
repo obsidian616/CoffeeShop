@@ -1,0 +1,137 @@
+﻿@model IEnumerable<CoffeeShop.Backend.Models.ViewModels.RegisterVm>
+
+@{
+    ViewBag.Title = "員工清單";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center">
+        <h2 class="me-3">員工清單</h2>
+        @Html.ActionLink("新增", "Register", null, new { @class = "btn btn-primary btn-sm" })
+    </div>
+
+    <form class="d-flex" method="get" action="@Url.Action("Index", "Users")">
+        <div class="input-group" style="width: 300px;">
+            <input type="text" name="searchString" class="search-input" placeholder="請輸入員工姓名" value="@ViewBag.SearchString" />
+            <button class="btn-search" type="submit" id="searchButton">搜尋</button>
+        </div>
+    </form>
+</div>
+
+<div class="mb-3">
+    <table class="table table-hover" id="userTable">
+        <thead>
+            <tr>
+                <th>員工編號</th>
+                <th>帳號</th>
+                <th>姓名</th>
+                <th>連絡電話</th>
+                <th>在職狀態</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div id="pagination" class="d-flex justify-content-center">
+
+    </div>
+
+</div>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var allUsers = [];
+            var itemsPerPage = 10;
+            var currentPage = 1;
+
+            fetchUsers();
+
+            function renderTable(page) {
+                var startIndex = (page - 1) * itemsPerPage;
+                var endIndex = Math.min(startIndex + itemsPerPage, allUsers.length);
+
+                $('#userTable tbody').empty();
+
+                for (var i = startIndex; i < endIndex; i++) {
+                    var user = allUsers[i];
+                    var status = user.IsStatus ? "在職" : "離職";
+                    var row = `<tr>
+                                    <td>${user.Id}</td>
+                                    <td>${user.Account}</td>
+                                    <td>${user.Name}</td>
+                                    <td>${user.Phone}</td>
+                                    <td class="${user.IsStatus ? "" : "text-danger"}">${status}</td>
+                                    <td><a href="@Url.Action("EditProfile", "Users")/${user.Id}" class="btn btn-primary">編輯</a></td>
+                                </tr>`;
+                    $('#userTable tbody').append(row);
+                }
+
+                renderPagination(page);
+            }
+
+            function renderPagination(page) {
+                var totalPages = Math.ceil(allUsers.length / itemsPerPage);
+                $('#pagination').empty();
+
+                if (page > 1) {
+                    $('#pagination').append('<button class="btn custom-btn prev-page">上一頁</button>');
+                }
+
+                for (var i = 1; i <= totalPages; i++) {
+                    $('#pagination').append(`<button class="btn custom-btn page-number ${i === page ? "active" : ""}" data-page="${i}">${i}</button>`);
+                }
+
+                if (page < totalPages) {
+                    $('#pagination').append('<button class="btn custom-btn next-page">下一頁</button>');
+                }
+            }
+
+            $('#pagination').on('click', '.page-number', function () {
+                var selectedPage = $(this).data('page');
+                renderTable(selectedPage);
+            });
+
+            $('#pagination').on('click', '.prev-page', function () {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable(currentPage);
+                }
+            });
+
+            $('#pagination').on('click', '.next-page', function () {
+                var totalPages = Math.ceil(allUsers.length / itemsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable(currentPage);
+                }
+            });
+
+
+            $('#searchButton').on('click', function (e) {
+                e.preventDefault();
+                var searchString = $('input[name="searchString"]').val(); 
+                fetchUsers(searchString); 
+            });
+
+
+            function fetchUsers(searchString = "") {
+                $.ajax({
+                    url: '/Users/GetAllUsers',
+                    type: 'GET',
+                    data: { searchString: searchString },
+                    success: function (data) {
+                        allUsers = data;
+                        currentPage = 1; 
+                        renderTable(currentPage);
+                    },
+                    error: function () {
+                        alert('無法加載用戶資料');
+                    }
+                });
+            }
+        });
+    </script>
+}

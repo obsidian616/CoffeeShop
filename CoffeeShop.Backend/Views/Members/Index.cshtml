@@ -1,0 +1,102 @@
+﻿@model IEnumerable<CoffeeShop.Backend.Models.ViewModels.MemberViewModel>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center">
+        <h2 class="me-3">會員清單</h2>
+    </div>
+
+    <form class="d-flex" method="get">
+        <div class="input-group" style="width: 300px;">
+            <input type="text" name="searchString" class="search-input" value="@ViewBag.SearchString" placeholder="搜索姓名或Email" />
+            <button class="btn-search" type="submit" id="searchButton">搜尋</button>
+        </div>
+    </form>
+</div>
+
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>姓名</th>
+            <th>Email</th>
+            <th>電話</th>
+            <th>生日</th>
+            <th>性別</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            foreach (var member in Model)
+            {
+                <tr>
+                    <td>@member.Name</td>
+                    <td>@member.Email</td>
+                    <td>@member.Phone</td>
+                    <td>@member.Birthday.ToString("yyyy/MM/dd")</td>
+                    <td>@(member.Gender ? "男" : "女")</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-center">目前沒有此會員數據。</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- 分頁邏輯 -->
+<!--<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(ViewBag.HasPreviousPage ? "" : "disabled")">
+            <a class="page-link" href="@Url.Action("Index", new { page = 1, searchString = ViewBag.SearchString })" aria-label="First">
+                <span aria-hidden="true">&laquo;&laquo;</span>
+            </a>
+        </li>
+        <li class="page-item @(ViewBag.HasPreviousPage ? "" : "disabled")">
+            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.PageNumber - 1, searchString = ViewBag.SearchString })" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+
+        @for (int i = 1; i <= ViewBag.PageCount; i++)
+        {
+            <li class="page-item @(i == ViewBag.PageNumber ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = i, searchString = ViewBag.SearchString })">@i</a>
+            </li>
+        }
+
+        <li class="page-item @(ViewBag.HasNextPage ? "" : "disabled")">
+            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.PageNumber + 1, searchString = ViewBag.SearchString })" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        <li class="page-item @(ViewBag.HasNextPage ? "" : "disabled")">
+            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.PageCount, searchString = ViewBag.SearchString })" aria-label="Last">
+                <span aria-hidden="true">&raquo;&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>-->
+<!-- 分頁邏輯 -->
+<div id="pagination" class="d-flex justify-content-center">
+    @if (ViewBag.HasPreviousPage)
+    {
+        @*<button class="btn custom-btn prev-page" onclick="location.href='@Url.Action("Index", new { page = 1, searchString = ViewBag.SearchString })'">首頁</button>*@
+        <button class="btn custom-btn prev-page" onclick="location.href='@Url.Action("Index", new { page = ViewBag.PageNumber - 1, searchString = ViewBag.SearchString })'">上一頁</button>
+    }
+
+    @for (int i = 1; i <= ViewBag.PageCount; i++)
+    {
+        <button class="btn custom-btn page-number @(i == ViewBag.PageNumber ? "active" : "")" onclick="location.href='@Url.Action("Index", new { page = i, searchString = ViewBag.SearchString })'">@i</button>
+    }
+
+    @if (ViewBag.HasNextPage)
+    {
+        <button class="btn custom-btn next-page" onclick="location.href='@Url.Action("Index", new { page = ViewBag.PageNumber + 1, searchString = ViewBag.SearchString })'">下一頁</button>
+        @*<button class="btn custom-btn next-page" onclick="location.href='@Url.Action("Index", new { page = ViewBag.PageCount, searchString = ViewBag.SearchString })'">末頁</button>*@
+    }
+</div>

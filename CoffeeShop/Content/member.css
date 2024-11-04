@@ -1,0 +1,122 @@
+﻿/*基本設定*/
+html, body {
+    height: 100%; /* 保持頁面全高 */
+    margin: 0;
+}
+
+.main-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*.form-container {
+    width: 100%;*/ /* 保持表單的寬度彈性 */
+    /*padding: 20px;*/ /* 增加表單內的間距 */
+    /*border: 1px solid #505637;*/ /* 添加外框 */
+    /*border-radius: 10px;*/ /* 圓角效果 */
+    /*box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);*/ /* 添加陰影以使外框更明顯 */
+/*}*/
+
+.form-label {
+    font-size: 16px;
+}
+
+.form-control {
+    width: 100%; /* 確保輸入框在小屏幕上也能適應 */
+    max-width: 300px; /* 限制輸入欄的寬度，減少過長的輸入框 */
+    border: none; /* 移除內層外框 */
+    padding: 5px; /* 增加輸入框的內間距 */
+}
+
+h2 {
+    text-align: center; /* 標題居中 */
+}
+
+.p-5 {
+    padding: 3rem !important;
+    margin-top: 300px;
+}
+
+/*#footer {
+    position: fixed !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    background-color: #f4f4ea !important;
+    margin: 0 !important;
+    padding: 10px 0 !important;
+    text-align: center;
+    z-index: 1000;*/ /* 確保它在最上層 */
+/*}*/
+
+/*會員*/
+/* 會員基本資料*/
+.personal-data {
+    font-size: 25px;
+    text-align: left;
+    display: block;
+}
+
+/*會員功能列表*/
+.Side-Bar {
+    display: flex;
+    flex-direction: column; /* 讓按鈕垂直排列 */
+    align-items: flex-start; /* 將內容靠左對齊 */
+    background-color: #505637;
+    color: white;
+    border: 2px solid #3498db; /* 邊框顏色和厚度 */
+    border-radius: 15px; /* 圓弧半徑 */
+    padding: 20px; /* 內邊距 */
+    width: 200px; /* 寬度 */
+    text-align: center; /* 文字居中 */
+    margin-top: 50px; /* 調整上邊距 */
+    margin-top: -20px; /* 向上移動 */
+    position: fixed;
+    top: 120px; /* 距離視窗上方 10px */
+    left: 10px; /* 距離視窗左側 10px */
+}
+
+.Side-Bar-item {
+    color: white;
+    text-decoration: none;
+    align-items: flex-start; /* 將內容靠左對齊 */
+    font-size: 25px;
+}
+
+.list-group {
+    background-color: #f4f4ea;
+}
+
+.member-title {
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 50px; /* 調整與下面元素的距離 */
+    font-size: 30px;
+}
+
+.right-container {
+    margin: 50px; /* 調整外距 */
+}
+
+.send-btn {
+    width: 200px;
+    height: 36px;
+    background: transparent;
+    border: 2px solid #092516;
+    color: black;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: 0.5s;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+/*登入*/
+.member-Column-title {
+    text-align: left;
+}
+
+.form-horizontal {
+    width: 200px;
+    margin-top: 200px;
+}

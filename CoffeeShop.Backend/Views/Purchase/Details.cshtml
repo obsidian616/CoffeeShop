@@ -1,0 +1,35 @@
+﻿@model CoffeeShop.Backend.Models.ViewModels.OrderDetailsViewModel
+
+<h2>訂單明細</h2>
+
+<p><strong>訂單ID:</strong> @Model.Order.Id</p>
+<p><strong>訂單日期:</strong> @Model.Order.OrderDate.ToString("yyyy-MM-dd HH:mm:ss")</p>
+<p><strong>總金額:</strong> @Model.Order.TotalAmount</p>
+@if (Model.Order.DiscountTotalAmount != null)
+{
+    <p><strong>折扣金額:</strong> @Model.Order.DiscountTotalAmount</p>
+}
+else
+{
+    <p><strong>折扣金額:</strong> 無</p>
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>品名</th>
+            <th>數量</th>
+            <th>價格</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OrderItems)
+        {
+            <tr>    
+                <td>@item.ItemCName (@item.ItemEName)</td>
+                <td>@item.Quantity</td>
+                <td>@item.Price</td>
+            </tr>
+        }
+    </tbody>
+</table>
