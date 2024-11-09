@@ -7,7 +7,7 @@ namespace ImageService.Controllers
     [ApiController]
     public class PhotoController : ControllerBase
     {
-        private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "Products");
+        private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "Products");
 
         public PhotoController()
         {

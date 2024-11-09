@@ -23,7 +23,7 @@ namespace CoffeeShop.Backend.Controllers
             // 設定 HttpClient 來調用第三個專案的 API
             _httpClient = new HttpClient
             {
-                BaseAddress = new Uri("https://localhost:7060/api/") // 確保使用正確的 API URL
+                BaseAddress = new Uri("https://localhost:7078/api/") // 確保使用正確的 API URL
             };
         }
 
