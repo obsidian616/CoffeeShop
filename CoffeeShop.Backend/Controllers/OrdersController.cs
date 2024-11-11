@@ -13,7 +13,7 @@ using System.Web.Mvc;
 
 namespace CoffeeShop.Backend.Controllers
 {
-    [MyAuthorize(Roles = "2")]
+    [MvcRoleFuncAuthorize(FunctionId = "2")]
     public class OrdersController : Controller
     {
         private AppDbContext db = new AppDbContext();

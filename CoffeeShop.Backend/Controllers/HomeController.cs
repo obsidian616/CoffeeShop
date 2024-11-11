@@ -20,7 +20,7 @@ namespace CoffeeShop.Backend.Controllers
             return View();
         }
 
-        [MyAuthorize(Roles = "8")]
+        [MvcRoleFuncAuthorize(FunctionId = "8")]
         // 聯絡我們頁面，顯示 GuestBook 資料
         public ActionResult Contact(int? page)
         {
@@ -32,7 +32,7 @@ namespace CoffeeShop.Backend.Controllers
             return View(pagedList); // 傳遞分頁後的資料到視圖
         }
 
-        [MyAuthorize(Roles = "8")]
+        [MvcRoleFuncAuthorize(FunctionId = "8")]
         // 刪除留言
         [HttpPost]
         public ActionResult Delete(int id)
@@ -51,7 +51,7 @@ namespace CoffeeShop.Backend.Controllers
             return RedirectToAction("Contact");  // 重定向回留言板
         }
 
-        [MyAuthorize(Roles = "7")]
+        [MvcRoleFuncAuthorize(FunctionId = "7")]
         // 餐點和會員分析
         public ActionResult MenuAndMemberAnalysis(DateTime? startDate, DateTime? endDate)
         {

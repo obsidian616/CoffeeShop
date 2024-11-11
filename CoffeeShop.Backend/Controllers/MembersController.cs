@@ -9,7 +9,7 @@ using System.Web.Mvc;
 
 namespace CoffeeShop.Backend.Controllers
 {
-    [MyAuthorize(Roles = "4")]
+    [MvcRoleFuncAuthorize(FunctionId = "4")]
     public class MembersController : Controller
     {
         private AppDbContext db = new AppDbContext();

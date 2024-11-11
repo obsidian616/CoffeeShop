@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
@@ -61,41 +62,46 @@ namespace CoffeeShop.Backend.Controllers
         {
             var service = new LoginService();
 
+            // 假設 service.GetGroupFuncids(account) 返回功能 ID 列表
             var funcIds = service.GetGroupFuncids(account);
 
+            // 使用功能 ID 列表作為角色
+            var roles = string.Join(",", funcIds);
 
-            var roles = string.Join(",", funcIds); 
-
+            // 取得用戶資料
             var user = service.GetUser(account);
 
+            // 將功能 ID 列表序列化為 JSON 字串
             string userData = JsonConvert.SerializeObject(funcIds);
 
-            FormsAuthenticationTicket ticket =
-            new FormsAuthenticationTicket(
-                1,         
-                account,
-                DateTime.Now, 
-                DateTime.Now.AddHours(8),
-                false,   
-                roles,      
-                "/"           
+            // 建立 FormsAuthenticationTicket
+            FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(
+                1,          // 版本號
+                account,    // 用戶名（通常是帳號）
+                DateTime.Now, // 發行時間
+                DateTime.Now.AddHours(8), // 失效時間
+                false,      // 是否記住我
+                roles,      // 用戶的角色（或功能ID）
+                "/"         // Cookie 的路徑
             );
 
+            // 加密票據並創建 cookie
             var value = FormsAuthentication.Encrypt(ticket);
-
             var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, value);
 
+            // 創建 ClaimsIdentity 並添加所需的聲明
+            var identity = new ClaimsIdentity("CustomAuthentication");
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())); // 用戶 ID
+            identity.AddClaim(new Claim("http://schemas.microsoft.com/accesscontrolservice/2010/07/claims/identityprovider", "someProvider")); // 身份提供者（可自訂）
 
-  
-            var identity = new GenericIdentity(user.Name);
+            // 創建 CustomPrincipal 並設置到 HttpContext.User
             var customPrincipal = new CustomPrincipal(identity, user.Id, user.Name, roles.Split(','));
-
             this.HttpContext.User = customPrincipal;
 
+            // 取得重定向 URL
             var url = FormsAuthentication.GetRedirectUrl(account, true);
 
             return (url, cookie);
-
         }
 
         private Result HandleLogin(LoginVm vm)
@@ -210,12 +216,16 @@ namespace CoffeeShop.Backend.Controllers
         #endregion
 
         #region 更改密碼
-        [MyAuthorize]
+
+
+        [MvcRoleFuncAuthorize]
         public ActionResult ChangePassword()
         {
             return View();
         }
-        [MyAuthorize]
+
+
+        [MvcRoleFuncAuthorize]
         [HttpPost]
         public ActionResult ChangePassword(ChangePasswordVm vm)
         {
@@ -256,7 +266,8 @@ namespace CoffeeShop.Backend.Controllers
                 return Result.Fail(ex.Message);
             }
         }
-        [MyAuthorize]
+ 
+    
         public ActionResult ChangePasswordConfirm()
         {
             return View();

@@ -19,7 +19,7 @@ namespace CoffeeShop.Backend.Controllers
             _context = new AppDbContext();  // 手動初始化資料庫上下文
         }
 
-        [MyAuthorize(Roles = "3")]
+        [MvcRoleFuncAuthorize(FunctionId = "3")]
         public ActionResult Index(int page = 1, string searchMonth = null)
         {
             int pageSize = 10; // 每頁顯示的訂單數量
@@ -56,7 +56,7 @@ namespace CoffeeShop.Backend.Controllers
             return View(orders);
         }
 
-        [MyAuthorize(Roles = "3")]
+        [MvcRoleFuncAuthorize(FunctionId = "3")]
         // 顯示訂單明細
         public ActionResult Details(int id)
         {
@@ -77,7 +77,7 @@ namespace CoffeeShop.Backend.Controllers
             return View(viewModel);
         }
 
-        [MyAuthorize(Roles = "1")]
+        [MvcRoleFuncAuthorize(FunctionId = "1")]
         //進行中的訂單
         public ActionResult OrderProcessing()
         {
@@ -90,7 +90,7 @@ namespace CoffeeShop.Backend.Controllers
             return View(activeOrders);
         }
 
-        [MyAuthorize(Roles = "3")]
+        [MvcRoleFuncAuthorize(FunctionId = "3")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult UpdateStatus(int id, int status)
@@ -118,7 +118,7 @@ namespace CoffeeShop.Backend.Controllers
             }
         }
 
-        [MyAuthorize(Roles = "3")]
+        [MvcRoleFuncAuthorize(FunctionId = "3")]
         [HttpPost]
         public ActionResult Complete(int id)
         {
@@ -131,7 +131,7 @@ namespace CoffeeShop.Backend.Controllers
             return Json(new { success = true });
         }
 
-        [MyAuthorize(Roles = "3")]
+        [MvcRoleFuncAuthorize(FunctionId = "3")]
         [HttpPost]
         public ActionResult Cancel(int id)
         {

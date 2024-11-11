@@ -3,7 +3,9 @@ using CoffeeShop.Backend.Models.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -21,14 +23,15 @@ namespace CoffeeShop.Backend
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            // 設定 AntiForgery 配置
+            AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
         }
+
 
         protected void Application_AuthenticateRequest(object sender, EventArgs e)
         {
             var service = new LoginService();
-
             if (!Request.IsAuthenticated) return;
-
 
             if (User.Identity is FormsIdentity identity)
             {
@@ -38,17 +41,17 @@ namespace CoffeeShop.Backend
                 var authTicket = System.Web.Security.FormsAuthentication.Decrypt(authCookie.Value);
                 if (authTicket == null) return;
 
-                // 取得 FormsAuthenticationTicket.UserData
-                var userData = authTicket.UserData;
                 var uName = authTicket.Name;
-                string[] roles = authTicket.UserData.Split(',');
+                string[] functions = authTicket.UserData.Split(',');
+
                 var user = service.GetUser(uName);
-                var customPrincipal = new CustomPrincipal(identity, user.Id, user.Name, roles);
+                if (user == null) return;
 
-         
+                // 創建 CustomPrincipal 並傳遞 userId
+                var customPrincipal = new CustomPrincipal(identity, user.Id, user.Name, functions);
+
                 HttpContext.Current.User = customPrincipal;
-                Context.User = customPrincipal; 
-
+                Context.User = customPrincipal;
             }
         }
     }

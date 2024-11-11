@@ -164,6 +164,7 @@
     </Compile>
     <Compile Include="Models\Components\CustomPrincipal.cs" />
     <Compile Include="Models\Components\HashUtility.cs" />
+    <Compile Include="Models\Components\MvcRoleFuncAuthorizeAttribute.cs" />
     <Compile Include="Models\Components\MyAuthorizeAttribute.cs" />
     <Compile Include="Models\Components\Result.cs" />
     <Compile Include="Models\Components\SidebarMenu.cs" />

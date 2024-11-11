@@ -10,7 +10,7 @@ using System.Web.Mvc;
 
 namespace CoffeeShop.Backend.Controllers
 {
-    [MyAuthorize(Roles = "5")]
+    [MvcRoleFuncAuthorize(FunctionId = "5")]
     public class UsersController : Controller
     {
         private readonly UserService _userService;

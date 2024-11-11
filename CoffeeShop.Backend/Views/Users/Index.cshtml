@@ -76,16 +76,29 @@
                 var totalPages = Math.ceil(allUsers.length / itemsPerPage);
                 $('#pagination').empty();
 
+                // 添加 "最前頁" 按鈕
+                if (page > 1) {
+                    $('#pagination').append('<button class="btn custom-btn first-page">最前頁</button>');
+                }
+
+                // 添加 "上一頁" 按鈕
                 if (page > 1) {
                     $('#pagination').append('<button class="btn custom-btn prev-page">上一頁</button>');
                 }
 
+                // 分頁按鈕
                 for (var i = 1; i <= totalPages; i++) {
                     $('#pagination').append(`<button class="btn custom-btn page-number ${i === page ? "active" : ""}" data-page="${i}">${i}</button>`);
                 }
 
+                // 添加 "下一頁" 按鈕
                 if (page < totalPages) {
                     $('#pagination').append('<button class="btn custom-btn next-page">下一頁</button>');
+                }
+
+                // 添加 "最末頁" 按鈕
+                if (page < totalPages) {
+                    $('#pagination').append('<button class="btn custom-btn last-page">最末頁</button>');
                 }
             }
 
@@ -108,7 +121,18 @@
                     renderTable(currentPage);
                 }
             });
+            // 點擊 "最前頁"
+            $('#pagination').on('click', '.first-page', function () {
+                currentPage = 1;
+                renderTable(currentPage);
+            });
 
+            // 點擊 "最末頁"
+            $('#pagination').on('click', '.last-page', function () {
+                var totalPages = Math.ceil(allUsers.length / itemsPerPage);
+                currentPage = totalPages;
+                renderTable(currentPage);
+            });
 
             $('#searchButton').on('click', function (e) {
                 e.preventDefault();
