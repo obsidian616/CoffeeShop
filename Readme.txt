@@ -61,6 +61,7 @@ DD負責-後台版面、權限控管、使用者、登入登出
 	add Sidebar.cshtml
 	add Models/Components/SidebarMenu.cs
 	add sidebar-auto-collapse.js
+	add Components/Result
 
 [V]登出登入
 	add LoginController
@@ -78,12 +79,15 @@ DD負責-後台版面、權限控管、使用者、登入登出
 	add ResetPassword(重設密碼)
 	add ProcessChangePassword(重設密碼確認email存不存在)
 	add HandleChangePassword(變更密碼加鹽)
+	add Components/HashUtility
 	
 [V]權限控管
 	add Global.asax Application_AuthenticateRequest
 	add Web.config authentication
-	add Authorize/MyAuthorizeAttribute(自定義授權)
-	add Authorize/CustomPrincipal
+	add Components/MyAuthorizeAttribute(自定義授權)
+	add Components/MvcRoleFuncAuthorizeAttribute(自定義授權V2)
+	add Components/CustomPrincipal
+
 	
 	使用者Users
 	add UsersController
